@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 import random
 
 # ==========================================
@@ -26,21 +27,30 @@ FONTE_MENU = pygame.font.SysFont("Arial", 36)
 FONTE_INTERFACE = pygame.font.SysFont("Arial", 24)
 
 # ==========================================
-# CARREGAMENTO DOS ASSETS (Caminho Relativo)
+# CARREGAMENTO DOS ASSETS (pasta 'imagens' ao lado do exe/.py)
 # ==========================================
-# Respeitando a regra do edital para portabilidade em outras máquinas
+# Função utilitária para localizar recursos tanto em execução normal quanto
+# quando o aplicativo está empacotado (PyInstaller).
+def resource_path(relative_path):
+    if getattr(sys, 'frozen', False):
+        base_path = os.path.dirname(sys.executable)
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, relative_path)
+
+ASSET_DIR = resource_path('imagens')
+
 try:
-    imagem_jogador = pygame.image.load("imagens/jogador.png").convert_alpha()
-    imagem_obstaculo = pygame.image.load("imagens/obstaculo.png").convert_alpha()
-    imagem_moeda = pygame.image.load("imagens/moeda.png").convert_alpha()
-    
-    # Redimensionando para garantir que caibam corretamente na lógica do jogo
+    imagem_jogador = pygame.image.load(os.path.join(ASSET_DIR, "jogador.png")).convert_alpha()
+    imagem_obstaculo = pygame.image.load(os.path.join(ASSET_DIR, "obstaculo.png")).convert_alpha()
+    imagem_moeda = pygame.image.load(os.path.join(ASSET_DIR, "moeda.png")).convert_alpha()
+
     img_jogador = pygame.transform.scale(imagem_jogador, (50, 50))
     img_obstaculo = pygame.transform.scale(imagem_obstaculo, (40, 40))
     img_moeda = pygame.transform.scale(imagem_moeda, (30, 30))
 except Exception as e:
     print(f"Erro ao carregar assets: {e}")
-    print("Verifique se a pasta 'imagens' contém: jogador.png, obstaculo.png e moeda.png")
+    print(f"Verifique se a pasta 'imagens' existe ao lado do executável e contém: jogador.png, obstaculo.png e moeda.png\nCaminho esperado: {ASSET_DIR}")
     pygame.quit()
     sys.exit()
 
